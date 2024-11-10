@@ -9,7 +9,18 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@typegoose/typegoose": "^12.9.0",
+    "argon2": "^0.41.1",
+    "config": "^3.3.12",
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "mongoose": "^8.8.1",
+    "nanoid": "^5.0.8",
+    "nodemailer": "^6.9.16",
+    "pino": "^9.5.0",
     "typescript": "^5.6.3"
   },
   "devDependencies": {
