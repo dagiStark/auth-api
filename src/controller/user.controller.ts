@@ -9,9 +9,15 @@ export async function createUserHandler(
 ) {
   const body = req.body;
   try {
-    const user = await createUser(body);
+    const user = await createUser(body); 
 
-    await sendEmail()
+    await sendEmail({
+      from: "text@example.com",
+      to: user.email,
+      subject: "Please verify your account",
+      text: `verification code ${user.verificationCode}. Id: ${user._id}`,
+    });
+
     return res.send("user created successfully");
   } catch (error: any) {
     if (error.code === 11000) {
