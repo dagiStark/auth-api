@@ -1,8 +1,13 @@
 import express from "express";
 import validateResource from "../middleware/validateResource";
-import { createUserSchema, verifyUserSchema } from "../schema/user.schema";
+import {
+  createUserSchema,
+  forgotPasswordSchema,
+  verifyUserSchema,
+} from "../schema/user.schema";
 import {
   createUserHandler,
+  forgotPasswordHandler,
   verifyUserHandler,
 } from "../controller/user.controller";
 
@@ -20,7 +25,10 @@ router.post(
   verifyUserHandler
 );
 
-
-
+router.post(
+  "/api/users/forgot-password",
+  validateResource(forgotPasswordSchema),
+  forgotPasswordHandler
+);
 
 export default router;

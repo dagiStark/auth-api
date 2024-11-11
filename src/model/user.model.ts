@@ -5,6 +5,7 @@ import {
   Severity,
   pre,
   DocumentType,
+  index,
 } from "@typegoose/typegoose";
 import * as argon2d from "argon2";
 
@@ -21,6 +22,9 @@ import * as argon2d from "argon2";
   this.password = hash;
   return;
 })
+
+@index({email: 1})
+
 export class User {
   @prop({ lowercase: true, required: true, unique: true })
   email: string;
