@@ -6,9 +6,7 @@ import router from "./routes";
 
 const app = express();
 
-app.use(router)
-
-
+app.use(router);
 
 const port = config.get("port");
 app.listen(port, () => {

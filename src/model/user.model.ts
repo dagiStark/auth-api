@@ -7,7 +7,6 @@ import {
   DocumentType,
 } from "@typegoose/typegoose";
 import * as argon2d from "argon2";
-import { nanoid } from "nanoid";
 
 @modelOptions({
   schemaOptions: { timestamps: true },
@@ -35,7 +34,10 @@ export class User {
   @prop({ required: true })
   password: string;
 
-  @prop({ required: true, default: () => nanoid() })
+  @prop({
+    required: true,
+    default: async () => (await import("nanoid")).nanoid(),
+  })
   verificationCode: string;
 
   @prop()
@@ -52,7 +54,6 @@ export class User {
       return false;
     }
   }
-  
 }
 
 const UserModel = getModelForClass(User);

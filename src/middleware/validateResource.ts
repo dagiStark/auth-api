@@ -3,20 +3,21 @@ import { AnyZodObject, ZodError } from "zod";
 
 const validateResource =
   (schema: AnyZodObject) =>
-  (req: Request, res: Response, next: NextFunction) => {
+  (req: Request, res: Response, next: NextFunction): void => {
     try {
       schema.parse({
         body: req.body,
         query: req.query,
         params: req.params,
       });
-      next();
+      next(); 
     } catch (error) {
       if (error instanceof ZodError) {
         const errors = error.issues.map((issue) => issue.message);
-        return res.status(400).json({ errors });
+        res.status(400).json({ errors });
+      } else {
+        res.status(500).json({ error: "Internal Server Error" });
       }
-      return res.status(500).json({ error: "Internal Server Error" });
     }
   };
 
