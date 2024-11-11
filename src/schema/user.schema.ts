@@ -1,6 +1,6 @@
 import { object, string, TypeOf } from "zod";
 
-export const createUserSchema = {
+export const createUserSchema = object({
   body: object({
     firstName: string({
       required_error: "First name is required",
@@ -21,6 +21,14 @@ export const createUserSchema = {
     message: "Passwords do not match",
     path: ["passwordConfirmation"],
   }),
-};
+});
 
-export type CreateUserInput = TypeOf<(typeof createUserSchema)["body"]>;
+export const verifyUserSchema = object({
+  params: object({
+    id: string(),
+    verificationCode: string(),
+  }),
+});
+
+export type CreateUserInput = TypeOf<typeof createUserSchema>["body"];
+export type verifyUserInput = TypeOf<typeof verifyUserSchema>["params"];
