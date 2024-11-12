@@ -9,6 +9,14 @@ import {
 } from "@typegoose/typegoose";
 import * as argon2d from "argon2";
 
+export const privateFields = [
+  "password",
+  "__v",
+  "verificationCode",
+  "passwordResetCode",
+  "verified"
+]
+
 @modelOptions({
   schemaOptions: { timestamps: true },
   options: { allowMixed: Severity.ALLOW },
@@ -24,6 +32,7 @@ import * as argon2d from "argon2";
 })
 
 @index({email: 1})
+
 
 export class User {
   @prop({ lowercase: true, required: true, unique: true })

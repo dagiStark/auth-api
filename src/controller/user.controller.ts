@@ -113,3 +113,7 @@ export async function resetPasswordHandler(
     res.send("Password update successful");
   }
 }
+
+export async function getCurrentUserHandler(req: Request, res: Response) {
+  res.send(res.locals.user);
+}
