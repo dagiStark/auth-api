@@ -11,7 +11,6 @@ import {
   findUserById,
 } from "../service/user.service";
 import sendEmail from "../utils/mailer";
-import { nanoid } from "nanoid";
 import log from "../utils/logger";
 
 export async function createUserHandler(
@@ -72,6 +71,7 @@ export async function forgotPasswordHandler(
   } else if (!user.verified) {
     res.send("unverified user");
   } else {
+    const { nanoid } = await import("nanoid");
     const passwordResetCode = nanoid();
     user.passwordResetCode = passwordResetCode;
 
