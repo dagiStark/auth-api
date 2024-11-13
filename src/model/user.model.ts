@@ -7,15 +7,16 @@ import {
   DocumentType,
   index,
 } from "@typegoose/typegoose";
-import * as argon2d from "argon2";
+import * as argon2 from "argon2";
+import { v4 as uuidv4 } from "uuid"; // Import uuid to generate verificationCode
 
 export const privateFields = [
   "password",
   "__v",
   "verificationCode",
   "passwordResetCode",
-  "verified"
-]
+  "verified",
+];
 
 @modelOptions({
   schemaOptions: { timestamps: true },
@@ -26,14 +27,12 @@ export const privateFields = [
     return;
   }
 
-  const hash = await argon2d.hash(this.password);
+  const hash = await argon2.hash(this.password);
   this.password = hash;
   return;
 })
 
-@index({email: 1})
-
-
+@index({ email: 1 })
 export class User {
   @prop({ lowercase: true, required: true, unique: true })
   email: string;
@@ -49,7 +48,7 @@ export class User {
 
   @prop({
     required: true,
-    default: async () => (await import("nanoid")).nanoid(),
+    default: uuidv4, // Use uuidv4 to generate verificationCode
   })
   verificationCode: string;
 
@@ -61,7 +60,7 @@ export class User {
 
   async validatePassword(this: DocumentType<User>, candidatePassword: string) {
     try {
-      return await argon2d.verify(this.password, candidatePassword);
+      return await argon2.verify(this.password, candidatePassword);
     } catch (error) {
       console.log(error);
       return false;

@@ -12,6 +12,7 @@ import {
 } from "../service/user.service";
 import sendEmail from "../utils/mailer";
 import log from "../utils/logger";
+import { v4 as uuidv4 } from "uuid"; // Import uuid
 
 export async function createUserHandler(
   req: Request<{}, {}, CreateUserInput>,
@@ -44,18 +45,29 @@ export async function verifyUserHandler(
   const id = req.params.id;
   const verificationCode = req.params.verificationCode;
 
-  const user = findUserById(id);
+  try {
+    const user = await findUserById(id);
 
-  if (!user) {
-    res.send("could not verify user");
-  } else if (user.verified) {
-    res.send("user already verified");
-  } else if (user.verificationCode === verificationCode) {
-    user.verified = true;
-    await user.save();
-    res.send("user successfully verified");
-  } else {
-    res.send("Could not verify user");
+    if (!user) {
+      res.status(404).send("User not found");
+      return;
+    }
+
+    if (user.verified) {
+      res.status(400).send("User already verified");
+      return;
+    }
+
+    if (user.verificationCode === verificationCode) {
+      user.verified = true;
+      await user.save();
+      res.status(200).send("User successfully verified");
+    } else {
+      res.status(400).send("Invalid verification code");
+    }
+  } catch (error) {
+    console.error("Error verifying user:", error);
+    res.status(500).send("Internal server error");
   }
 }
 
@@ -64,15 +76,21 @@ export async function forgotPasswordHandler(
   res: Response
 ): Promise<void> {
   const { email } = req.body;
-  const user = await findUserByEmail(email);
 
-  if (!user) {
-    res.send("a user with this email doesn't exist");
-  } else if (!user.verified) {
-    res.send("unverified user");
-  } else {
-    const { nanoid } = await import("nanoid");
-    const passwordResetCode = nanoid();
+  try {
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      res.status(404).send("A user with this email doesn't exist");
+      return;
+    }
+
+    if (!user.verified) {
+      res.status(403).send("Unverified user");
+      return;
+    }
+
+    const passwordResetCode = uuidv4();
     user.passwordResetCode = passwordResetCode;
 
     await user.save();
@@ -84,33 +102,52 @@ export async function forgotPasswordHandler(
       text: `Password reset code: ${passwordResetCode}. Id: ${user._id}`,
     });
 
-    log.debug(`password reset code sent ${user.email}`);
+    log.debug(`Password reset code sent to ${user.email}`);
+    res.status(200).send("Password reset code sent!");
+  } catch (error) {
+    log.error("Error in forgotPasswordHandler:", error);
 
-    res.send("Password reset code sent!");
+    // Return a generic message for the client while logging details internally
+    res.status(500).send("An error occurred. Please try again later.");
   }
 }
 
 export async function resetPasswordHandler(
   req: Request<resetPasswordInput["params"], {}, resetPasswordInput["body"]>,
   res: Response
-) {
+): Promise<void> {
   const { id, passwordResetCode } = req.params;
-
   const { password } = req.body;
 
-  const user = await findUserById(id);
+  try {
+    const user = await findUserById(id);
 
-  if (
-    !user ||
-    !user.passwordResetCode ||
-    user.passwordResetCode !== passwordResetCode
-  ) {
-    res.status(400).send("could not reset user password");
-  } else {
+    // Handle user not found or invalid password reset code
+    if (!user) {
+      log.warn(`User with ID ${id} not found`);
+      res.status(404).send("User not found");
+      return;
+    }
+
+    if (
+      !user.passwordResetCode ||
+      user.passwordResetCode !== passwordResetCode
+    ) {
+      log.warn(`Invalid password reset code for user ${id}`);
+      res.status(400).send("Invalid password reset code");
+      return;
+    }
+
+    // Update password and clear the reset code
     user.passwordResetCode = null;
-    user.password = password;
+    user.password = password; // Make sure to hash the password before saving if needed
     await user.save();
-    res.send("Password update successful");
+
+    log.info(`Password reset successful for user ${id}`);
+    res.status(200).send("Password update successful");
+  } catch (error) {
+    log.error("Error in resetPasswordHandler:", error);
+    res.status(500).send("An error occurred. Please try again later.");
   }
 }
 

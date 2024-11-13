@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 
 router.post(
-  "/api/session",
+  "/api/sessions",
   validateResource(createSessionSchema),
   createSessionHandler
 );
