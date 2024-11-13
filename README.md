@@ -10,7 +10,7 @@
 7. Access token
 8. Refresh tokens
 
-## What technology are we using?
+## Technologies needed
 - [TypeScript](https://www.typescriptlang.org/) - Static tye checking 
 - [Express@5](https://expressjs.com/en/5x/api.html) - Web server
 - [Typegoose](https://typegoose.github.io/typegoose/) - Mongoose wrapper for creating TypeScript interfaces and models
