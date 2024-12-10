@@ -36,7 +36,7 @@
 * DB_URL
 
 ## How to use
-clone the repositry
-setup the environment viriables
-npm install
-npm run dev
+* clone the repositry
+* setup the environment viriables
+* npm install
+* npm run dev
