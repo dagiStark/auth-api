@@ -26,3 +26,17 @@
 - [Postman](https://www.postman.com/downloads/)
 - [Node.js](https://nodejs.org/en/)
 - [MongoDB](https://www.mongodb.com/try/download/community)
+
+
+## Environment variables 
+* ACCESS_TOKEN_PUBLIC_KEY
+* ACCESS_TOKEN_PRIVATE_KEY
+* REFRESH_PRIVATE_KEY
+* REFRESH_PUBLIC_KEY
+* DB_URL
+
+## How to use
+clone the repositry
+setup the environment viriables
+npm install
+npm run dev
